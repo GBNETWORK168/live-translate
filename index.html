@@ -43,25 +43,36 @@ function render(){for(const S of ["T","B"]){const el=$("log"+S);el.innerHTML="";
  const a=document.createElement("div");a.className="o";a.textContent=mine?m.tr:m.orig;const b=document.createElement("div");b.className="t";b.textContent=mine?m.orig:m.tr;const r=document.createElement("button");r.className="rp";r.textContent="🔊";r.onclick=()=>{unlock();speak(m.tr,m.tl,true)};if(!mine){d.append(b,a,r)}else d.append(b,a);el.append(d)}el.scrollTop=el.scrollHeight}}
 let voices=[],unlocked=false;const SS=window.speechSynthesis;
 function loadVoices(){if(SS)voices=SS.getVoices()}if(SS){loadVoices();SS.addEventListener?SS.addEventListener("voiceschanged",loadVoices):SS.onvoiceschanged=loadVoices}
-function unlock(){if(!SS||unlocked)return;try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;SS.speak(u);unlocked=true}catch(e){}}
+function unlock(){unlockAudio();if(!SS||unlocked)return;try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;SS.speak(u);unlocked=true}catch(e){}}
 function pickVoice(l){loadVoices();const lc=l.toLowerCase().replace("_","-"),pre=lc.split("-")[0];const n=v=>v.lang.toLowerCase().replace("_","-");
  return voices.find(v=>n(v)===lc)||(pre==="zh"?voices.find(v=>n(v).startsWith(lc.slice(0,5)))||voices.find(v=>n(v).startsWith("zh")):null)||voices.find(v=>n(v).split("-")[0]===pre)||null}
+
+const AU=new Audio();AU.preload="auto";AU.setAttribute("playsinline","");let auUnlocked=false,auQ=[],auTok=0;
+const SILENT="data:audio/mpeg;base64,SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYxLjcuMTAzAAAAAAAAAAAAAAD/83DAAAAAAAAAAAAASW5mbwAAAA8AAAAKAAAEywA7Ozs7Ozs7OztRUVFRUVFRUVFRZ2dnZ2dnZ2dnZ319fX19fX19fX2SkpKSkpKSkpKSqKioqKioqKioqL6+vr6+vr6+vr7U1NTU1NTU1NTU6urq6urq6urq6v////////////8AAAAATGF2YzYxLjE5AAAAAAAAAAAAAAAAJAMGAAAAAAAABMv4D8lEAAAAAAAAAAAAAAAAAP/zQMQAAAADSAAAAABMQU1FMy4xMDBVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxFsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80DEpAAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsSjAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NCxKMAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NAxKQAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/80LEowAAA0gAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=";
+function unlockAudio(){if(auUnlocked)return;try{AU.src=SILENT;const p=AU.play();if(p)p.then(()=>{auUnlocked=true;AU.pause()}).catch(()=>{});else auUnlocked=true}catch(e){}}
+function chunks(t){const out=[];let cur="";for(const part of t.split(/(?<=[。！？!?.,，、;；\s])/)){if((cur+part).length>180){if(cur)out.push(cur);let p=part;while(p.length>180){out.push(p.slice(0,180));p=p.slice(180)}cur=p}else cur+=part}if(cur.trim())out.push(cur);return out}
+function ttsLang(l){return l==="zh-TW"?"zh-TW":l==="zh-CN"?"zh-CN":l.split("-")[0]}
+function playGoogle(t,l){return new Promise((res,rej)=>{const tok=++auTok;const q=chunks(t);let i=0;
+ const next=()=>{if(tok!==auTok)return res();if(i>=q.length)return res();const seg=q[i++];
+  AU.onended=next;AU.onerror=()=>rej("err");AU.src="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl="+ttsLang(l)+"&total="+q.length+"&idx="+(i-1)+"&textlen="+seg.length+"&q="+encodeURIComponent(seg);
+  const p=AU.play();if(p)p.catch(e=>{if(i===1)rej(e);else next()})};next()})}
+async function autoSpeak(t,l){if(!tts)return;if(SS)SS.cancel();try{await playGoogle(t,l)}catch(e){speak(t,l)}}
 function hint(m){const w=$("hint");w.textContent=m;w.style.display="block";clearTimeout(hint.t);hint.t=setTimeout(()=>w.style.display="none",4000)}
 function speak(t,l,force){if(!SS){if(force)hint("此瀏覽器不支援朗讀");return}if(!tts&&!force)return;
- SS.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=pickVoice(l);if(v)u.voice=v;else if(voices.length)hint("手機沒有「"+(L.find(x=>x[0]===l)||[,l])[1]+"」語音，可能無法朗讀");
+ SS.cancel();auTok++;try{AU.pause()}catch(e){}const u=new SpeechSynthesisUtterance(t);u.lang=l;const v=pickVoice(l);if(v)u.voice=v;else if(voices.length)hint("手機沒有「"+(L.find(x=>x[0]===l)||[,l])[1]+"」語音，可能無法朗讀");
  u.rate=1;u.volume=1;setTimeout(()=>{SS.speak(u);setTimeout(()=>{if(SS.paused)SS.resume()},250)},60)}
 async function handle(S,text){text=text.trim();if(!text)return;const O=S==="T"?"B":"T";const sl=$("lang"+S).value,tl=$("lang"+O).value;
- $("live"+S).textContent="翻譯中…";const tr=await translate(text,sl,tl);$("live"+S).textContent="";hist.push({side:S,orig:text,tr,tl});render();speak(tr,tl)}
+ $("live"+S).textContent="翻譯中…";const tr=await translate(text,sl,tl);$("live"+S).textContent="";hist.push({side:S,orig:text,tr,tl});render();autoSpeak(tr,tl)}
 document.querySelectorAll(".send,.mic,#tts").forEach(b=>b.addEventListener("touchstart",unlock,{passive:true}));
 document.querySelectorAll(".send").forEach(b=>b.onclick=()=>{unlock();const i=$("in"+b.dataset.s);handle(b.dataset.s,i.value);i.value=""});
 for(const S of ["T","B"])$("in"+S).addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){unlock();handle(S,e.target.value);e.target.value=""}});
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
 if(!SR){$("warn").style.display="block";document.querySelectorAll(".mic").forEach(m=>m.disabled=true)}
-for(const S of ["T","B"])$("mic"+S).onclick=()=>{unlock();if(rec){rec.stop();return}
+for(const S of ["T","B"])$("mic"+S).onclick=()=>{unlock();if(rec){try{rec.stop()}catch(e){}return}
  rec=new SR();rec.lang=$("lang"+S).value;rec.interimResults=true;rec.continuous=false;let fin="";const btn=$("mic"+S);btn.classList.add("on");SS&&SS.cancel();
  rec.onresult=e=>{let it="";fin="";for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else it+=r[0].transcript}$("live"+S).textContent=fin+it};
  rec.onerror=e=>{$("live"+S).textContent=e.error==="not-allowed"?"麥克風權限被拒，請在瀏覽器設定允許":"辨識錯誤："+e.error};
- rec.onend=()=>{btn.classList.remove("on");rec=null;if(fin)setTimeout(()=>handle(S,fin),300);};
+ rec.onend=()=>{btn.classList.remove("on");const r=rec;rec=null;try{r.abort()}catch(e){}if(fin)setTimeout(()=>handle(S,fin),600);};
  try{rec.start()}catch(e){rec=null;btn.classList.remove("on")}};
 $("swap").onclick=()=>{const a=$("langT").value;$("langT").value=$("langB").value;$("langB").value=a};
 $("tts").onclick=()=>{unlock();tts=!tts;$("tts").textContent=tts?"🔊 朗讀：開":"🔇 朗讀：關";if(!tts&&SS)SS.cancel()};
