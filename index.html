@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>即時對話翻譯</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif;background:#111;color:#fff}
+#app{display:flex;flex-direction:column;height:100dvh}
+.half{flex:1;display:flex;flex-direction:column;padding:10px;min-height:0}
+#top{transform:rotate(180deg);background:#1e3a5f}#bot{background:#1f4d3a}
+.bar{display:flex;gap:6px;align-items:center}
+select,input,button{font-size:16px;border-radius:8px;border:0;padding:8px}
+input{flex:1;min-width:0}
+.log{flex:1;overflow-y:auto;margin:8px 0;display:flex;flex-direction:column;gap:6px}
+.msg{background:rgba(255,255,255,.1);padding:8px;border-radius:8px}.msg.mine{background:rgba(255,255,255,.22)}
+.o{font-size:13px;opacity:.7}.t{font-size:20px}
+.live{min-height:24px;color:#ffd54f;font-size:18px}
+.mic{width:72px;height:72px;border-radius:50%;font-size:32px;background:#e53935;color:#fff;flex:none}
+.mic.on{background:#ffb300;animation:p 1s infinite}@keyframes p{50%{transform:scale(1.1)}}
+#mid{display:flex;justify-content:center;gap:8px;padding:6px;background:#000;flex-wrap:wrap}
+#mid button{background:#333;color:#fff;padding:6px 10px}
+#warn{display:none;background:#b71c1c;padding:6px;text-align:center;font-size:14px}
+</style></head><body><div id="app">
+<section class="half" id="top"><div class="bar"><select id="langT"></select><span>Guest</span></div>
+<div class="log" id="logT"></div><div class="live" id="liveT"></div>
+<div class="bar"><input id="inT" placeholder="Type here…"><button data-s="T" class="send">➤</button><button class="mic" id="micT">🎤</button></div></section>
+<div id="warn">此瀏覽器不支援語音辨識，請改用打字，或使用新版 Chrome／Safari（需 https）。</div>
+<div id="mid"><button id="swap">⇅ 語言對調</button><button id="tts">🔊 朗讀：開</button><button id="clear">🗑 清除</button></div>
+<section class="half" id="bot"><div class="bar"><select id="langB"></select><span>我（銘旭）</span></div>
+<div class="log" id="logB"></div><div class="live" id="liveB"></div>
+<div class="bar"><input id="inB" placeholder="輸入文字…"><button data-s="B" class="send">➤</button><button class="mic" id="micB">🎤</button></div></section>
+</div><script>
+const L=[["zh-TW","繁體中文"],["en-US","English"],["ja-JP","日本語"],["ko-KR","한국어"],["vi-VN","Tiếng Việt"],["th-TH","ไทย"],["id-ID","Bahasa Indonesia"],["zh-CN","简体中文"],["es-ES","Español"],["fr-FR","Français"],["de-DE","Deutsch"],["ms-MY","Bahasa Melayu"],["tl-PH","Filipino"]];
+const $=id=>document.getElementById(id);
+for(const s of ["langT","langB"])$(s).innerHTML=L.map(([c,n])=>`<option value="${c}">${n}</option>`).join("");
+$("langT").value="en-US";$("langB").value="zh-TW";
+let tts=true,hist=[];
+const code=c=>c.startsWith("zh")?c:c.split("-")[0];
+async function translate(q,s,t){if(code(s)===code(t))return q;
+ try{const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${code(s)}&tl=${code(t)}&dt=t&q=${encodeURIComponent(q)}`);const j=await r.json();const o=j[0].map(x=>x[0]).join("");if(o)return o;throw 0}
+ catch(e){try{const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=${code(s)}|${code(t)}`);const j=await r.json();return j.responseData.translatedText}catch(e2){return "（翻譯失敗，請檢查網路）"}}}
+function render(){for(const S of ["T","B"]){const el=$("log"+S);el.innerHTML="";for(const m of hist){const mine=m.side===S;const d=document.createElement("div");d.className="msg"+(mine?" mine":"");
+ const a=document.createElement("div");a.className="o";a.textContent=mine?m.tr:m.orig;const b=document.createElement("div");b.className="t";b.textContent=mine?m.orig:m.tr;d.append(b,a);el.append(d)}el.scrollTop=el.scrollHeight}}
+function speak(t,l){if(!tts||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;speechSynthesis.speak(u)}
+async function handle(S,text){text=text.trim();if(!text)return;const O=S==="T"?"B":"T";const sl=$("lang"+S).value,tl=$("lang"+O).value;
+ $("live"+S).textContent="翻譯中…";const tr=await translate(text,sl,tl);$("live"+S).textContent="";hist.push({side:S,orig:text,tr});render();speak(tr,tl)}
+document.querySelectorAll(".send").forEach(b=>b.onclick=()=>{const i=$("in"+b.dataset.s);handle(b.dataset.s,i.value);i.value=""});
+for(const S of ["T","B"])$("in"+S).addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){handle(S,e.target.value);e.target.value=""}});
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
+if(!SR){$("warn").style.display="block";document.querySelectorAll(".mic").forEach(m=>m.disabled=true)}
+for(const S of ["T","B"])$("mic"+S).onclick=()=>{if(rec){rec.stop();return}
+ rec=new SR();rec.lang=$("lang"+S).value;rec.interimResults=true;rec.continuous=false;let fin="";const btn=$("mic"+S);btn.classList.add("on");speechSynthesis&&speechSynthesis.cancel();
+ rec.onresult=e=>{let it="";fin="";for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else it+=r[0].transcript}$("live"+S).textContent=fin+it};
+ rec.onerror=e=>{$("live"+S).textContent=e.error==="not-allowed"?"麥克風權限被拒，請在瀏覽器設定允許":"辨識錯誤："+e.error};
+ rec.onend=()=>{btn.classList.remove("on");rec=null;const t=fin||$("live"+S).textContent;if(fin)handle(S,t);};
+ try{rec.start()}catch(e){rec=null;btn.classList.remove("on")}};
+$("swap").onclick=()=>{const a=$("langT").value;$("langT").value=$("langB").value;$("langB").value=a};
+$("tts").onclick=()=>{tts=!tts;$("tts").textContent=tts?"🔊 朗讀：開":"🔇 朗讀：關";if(!tts)speechSynthesis.cancel()};
+$("clear").onclick=()=>{if(confirm("清除所有對話？")){hist=[];render()}};
+</script></body></html>
