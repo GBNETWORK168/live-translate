@@ -5,13 +5,11 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC",sans-serif;background:#f2f2f7;color:#1c1c1e;overflow:hidden}
 #app{display:flex;flex-direction:column;height:100dvh}
-.half{--c1:#AEB4C2;--c2:#E4E7EE;--ac:#0A84FF;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:14px 18px;transition:opacity .5s,filter .5s}
-#top{transform:rotate(180deg);--ac:#0A84FF}#bot{--ac:#FF9F0A}
-.half[data-voice=f],#top[data-voice=f],#bot[data-voice=f]{--c1:#FF6FA8;--c2:#FFB3CF;--ac:#FF6FA8}
-.half[data-voice=m],#top[data-voice=m],#bot[data-voice=m]{--c1:#0A84FF;--c2:#7CC4FF;--ac:#0A84FF}
-.half::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 80% at 50% 100%,color-mix(in srgb,var(--c2) 45%,transparent),transparent 70%),linear-gradient(180deg,#fbfbfd,#eef0f5);transition:opacity .6s}
+.half{--ac:#0A84FF;position:relative;flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:14px 18px;transition:opacity .4s}
+#top{transform:rotate(180deg);--ac:#0A84FF;--c1:#0A84FF;--c2:#7CC4FF}#bot{--ac:#FF9F0A;--c1:#FF9F0A;--c2:#FFD08A}
+.half::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 80% at 50% 100%,color-mix(in srgb,var(--c2) 22%,transparent),transparent 70%),linear-gradient(180deg,#fbfbfd,#eef0f5);transition:opacity .6s}
 .half::after{content:"";position:absolute;inset:0;z-index:-1;opacity:0;background:radial-gradient(130% 90% at 50% 100%,color-mix(in srgb,var(--c1) 75%,transparent),color-mix(in srgb,var(--c2) 50%,transparent) 55%,transparent 85%);transition:opacity .6s}
-.half.active::after{opacity:1}.half.dim{opacity:.45;filter:saturate(.4)}
+.half.active::after{opacity:1}.half.dim{opacity:.5}
 .pill{appearance:none;-webkit-appearance:none;border:0;font:inherit;font-size:15px;font-weight:600;padding:8px 30px 8px 16px;border-radius:999px;background:rgba(255,255,255,.75) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='1.6' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 2px 10px rgba(0,0,0,.06);color:#1c1c1e}
 .who{font-size:12px;color:#8e8e93;margin-top:4px}
 .log{flex:1;width:100%;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:12px 0;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 18%);mask-image:linear-gradient(transparent,#000 18%)}
@@ -24,9 +22,10 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF 
 .row input:focus{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--ac) 50%,transparent)}
 .row input{flex:1;min-width:0;font:inherit;font-size:16px;border:0;border-radius:999px;padding:11px 16px;background:rgba(255,255,255,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
 .send{border:0;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.8);font-size:16px;color:var(--ac)}
-.mic{--lvl:0;position:relative;flex:none;border:0;width:78px;height:78px;border-radius:50%;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#fff),var(--ac));color:#fff;box-shadow:0 0 0 calc(10px + var(--lvl)*26px) color-mix(in srgb,var(--ac) 14%,transparent),0 0 0 calc(20px + var(--lvl)*40px) color-mix(in srgb,var(--ac) 7%,transparent),0 8px 22px color-mix(in srgb,var(--ac) 40%,transparent);transition:box-shadow .12s,background .5s}
-.mic svg{width:30px;height:30px}.mic.on{animation:pulse 1.6s infinite}
-@keyframes pulse{50%{filter:brightness(1.12)}}
+.mic{position:relative;flex:none;border:0;width:78px;height:78px;border-radius:50%;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 70%,#fff),var(--ac));color:#fff;box-shadow:0 0 0 10px color-mix(in srgb,var(--ac) 12%,transparent),0 6px 16px color-mix(in srgb,var(--ac) 35%,transparent)}
+.mic::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:3px solid var(--ac);opacity:0;pointer-events:none}
+.mic svg{width:30px;height:30px}.mic.on::after{animation:ring 1.4s ease-out infinite}
+@keyframes ring{0%{opacity:.7;transform:scale(.85)}100%{opacity:0;transform:scale(1.25)}}
 .mic:disabled{opacity:.4}
 #bar{position:relative;z-index:2;margin:-6px 14px;display:flex;justify-content:space-around;align-items:center;padding:6px;border-radius:22px;background:rgba(255,255,255,.65);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);box-shadow:0 4px 20px rgba(0,0,0,.08),inset 0 0 0 1px rgba(255,255,255,.7)}
 #bar button{border:0;background:none;font:inherit;font-size:11px;color:#3a3a3c;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 6px;border-radius:12px;min-width:52px}
@@ -35,11 +34,13 @@ html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF 
 #notes{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;display:flex;flex-direction:column;gap:6px;align-items:center;width:90%}
 .note{background:rgba(28,28,30,.85);color:#fff;font-size:13px;padding:8px 14px;border-radius:14px;text-align:center}
 #hint{display:none}
+
+@media (pointer:coarse){.pill,.row input,#bar{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.pill{background-color:rgba(255,255,255,.92)}.row input{background:rgba(255,255,255,.9)}#bar{background:rgba(255,255,255,.94)}}
 </style></head><body><div id="app">
 <section class="half" id="top"><select class="pill" id="langT"></select><div class="who">Guest</div>
 <div class="log" id="logT"></div><div class="live" id="liveT"></div>
 <div class="row"><input id="inT" placeholder="Type here…"><button data-s="T" class="send">➤</button><button class="mic" id="micT" aria-label="mic"></button></div></section>
-<div id="bar"><button id="swap"><b>⇅</b>對調</button><button id="tts" class="on"><b>🔊</b>朗讀</button><button id="auto"><b>◎</b>自動對話</button><button id="vc"><b>🎨</b>聲音變色</button><button id="clear"><b>✕</b>清除</button></div>
+<div id="bar"><button id="swap"><b>⇅</b>對調</button><button id="tts" class="on"><b>🔊</b>朗讀</button><button id="auto"><b>◎</b>自動對話</button><button id="clear"><b>✕</b>清除</button></div>
 <section class="half" id="bot"><select class="pill" id="langB"></select><div class="who">我（銘旭）</div>
 <div class="log" id="logB"></div><div class="live" id="liveB"></div>
 <div class="row"><input id="inB" placeholder="輸入文字…"><button data-s="B" class="send">➤</button><button class="mic" id="micB" aria-label="mic"></button></div></section>
@@ -82,66 +83,66 @@ function speak(t,l,force){return new Promise(res=>{if(!SS){if(force)note("此瀏
  u.rate=1;u.volume=1;let done=false;const fin=()=>{if(!done){done=true;res()}};u.onend=fin;u.onerror=fin;setTimeout(fin,Math.min(30000,2500+t.length*180));
  setTimeout(()=>{SS.speak(u);setTimeout(()=>{if(SS.paused)SS.resume()},250)},60)})}
 async function autoSpeak(t,l){if(!tts)return;if(SS)SS.cancel();try{await playGoogle(t,l)}catch(e){await speak(t,l)}}
-/* ---------- highlight / voice color ---------- */
-function setActive(S){for(const X of ["T","B"]){$(X==="T"?"top":"bot").classList.toggle("active",X===S);$(X==="T"?"top":"bot").classList.toggle("dim",!!S&&X!==S)}}
-const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-let vcOn=!isIOS&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia),actx=null,an=null,stream=null,pitches=[],lvlSide=null;
-$("vc").classList.toggle("on",vcOn);
-async function ensureAudio(){if(!vcOn||an)return;try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});actx=new (window.AudioContext||window.webkitAudioContext)();
- const src=actx.createMediaStreamSource(stream);an=actx.createAnalyser();an.fftSize=2048;src.connect(an);loop()}catch(e){vcOn=false;$("vc").classList.remove("on");note("無法取得麥克風音高，已關閉聲音變色")}}
-function stopAudio(){if(stream)stream.getTracks().forEach(t=>t.stop());if(actx)actx.close();stream=actx=an=null}
-function pitchOf(buf,sr){let rms=0;for(const x of buf)rms+=x*x;rms=Math.sqrt(rms/buf.length);if(rms<0.015)return [0,rms];
- const minL=Math.floor(sr/400),maxL=Math.floor(sr/70);let best=0,bl=-1;for(let l=minL;l<=maxL;l++){let c=0;for(let i=0;i<buf.length-l;i++)c+=buf[i]*buf[i+l];if(c>best){best=c;bl=l}}
- let e=0;for(let i=0;i<buf.length;i++)e+=buf[i]*buf[i];return [(bl>0&&best/e>0.3)?sr/bl:0,rms]}
-function loop(){if(!an)return;const b=new Float32Array(an.fftSize);an.getFloatTimeDomainData(b);const [f,rms]=pitchOf(b,actx.sampleRate);
- if(lvlSide){$("mic"+lvlSide).style.setProperty("--lvl",Math.min(1,rms*8).toFixed(2));if(f)pitches.push(f)}setTimeout(()=>requestAnimationFrame(loop),60)}
-function judgeVoice(S){if(!vcOn||pitches.length<5){pitches=[];return}const p=pitches.sort((a,b)=>a-b)[pitches.length>>1];pitches=[];
- $(S==="T"?"top":"bot").dataset.voice=p>165?"f":"m"}
-function levelOn(S){lvlSide=S;pitches=[];setActive(S)}
-function levelOff(){if(lvlSide){$("mic"+lvlSide).style.setProperty("--lvl",0)}lvlSide=null}
-$("vc").onclick=()=>{vcOn=!vcOn;$("vc").classList.toggle("on",vcOn);if(vcOn){if(isIOS)note("iPhone 上可能干擾語音辨識，若辨識變差請關閉");ensureAudio()}else{stopAudio();for(const id of ["top","bot"])delete $(id).dataset.voice}};
-/* ---------- core ---------- */
-let busy=false;
-async function handle(S,text,srcLang){text=text.trim();if(!text)return;const O=other(S);const sl=srcLang||$("lang"+S).value,tl=$("lang"+O).value;busy=true;
- setActive(S);$("live"+S).textContent="翻譯中…";const tr=await translate(text,sl,tl);$("live"+S).textContent="";hist.push({side:S,orig:text,tr,tl});render();
- await autoSpeak(tr,tl);busy=false;if(!autoOn)setActive(null)}
+/* ---------- highlight ---------- */
+function setActive(S){for(const X of ["T","B"]){const el=$(X==="T"?"top":"bot");el.classList.toggle("active",X===S);el.classList.toggle("dim",!!S&&X!==S)}}
+let liveBuf={},liveRaf=0;function setLive(S,t){liveBuf[S]=t;if(!liveRaf)liveRaf=requestAnimationFrame(()=>{liveRaf=0;for(const k in liveBuf)$("live"+k).textContent=liveBuf[k];liveBuf={}})}
+/* ---------- state machine: idle | listening | busy(translating/speaking) ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let state="idle",recActive=false,curSide="B",mode="manual",fin="",interim="",heard=false,ignoreResult=false,fails=0,retryT=null,autoOn=false,expSide="B";
+const rec=SR?new SR():null;
+function clearMics(){document.querySelectorAll(".mic").forEach(m=>m.classList.remove("on"))}
+function startListen(S,m){clearTimeout(retryT);retryT=null;if(!rec||recActive||state!=="idle")return false;
+ curSide=S;mode=m;fin="";interim="";heard=false;ignoreResult=false;rec.lang=$("lang"+S).value;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+ recActive=true;state="listening";clearMics();$("mic"+S).classList.add("on");setLive(S,mode==="auto"?"聆聽中…":"請說話…");setLive(other(S),"");
+ if(mode==="manual")setActive(S);
+ try{rec.start();return true}catch(e){recActive=false;state="idle";clearMics();scheduleRetry();return false}}
+function stopListen(abort){if(!recActive)return;ignoreResult=!!abort;try{abort?rec.abort():rec.stop()}catch(e){}}
+function scheduleRetry(){if(!autoOn)return;clearTimeout(retryT);if(fails>6){fails=0;toggleAuto(false);note("語音辨識暫時無法使用，請稍後再開自動對話，或改按麥克風／打字");return}
+ const d=fails?Math.min(4000,400*2**fails):350;retryT=setTimeout(()=>{retryT=null;if(autoOn&&state==="idle")startListen(expSide,"auto")},d)}
+if(rec){
+ rec.onspeechstart=()=>{heard=true;setActive(curSide)};
+ rec.onresult=e=>{if(ignoreResult)return;heard=true;let f="",it="";for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)f+=r[0].transcript;else it+=r[0].transcript}fin=f;interim=it;setLive(curSide,f+it);fails=0;if(mode==="auto")setActive(curSide)};
+ rec.onerror=e=>{const er=e.error;
+  if(er==="not-allowed"||er==="service-not-allowed"){note("麥克風或語音辨識權限被拒，請到「設定 › Safari › 麥克風」允許後重新整理");if(autoOn)toggleAuto(false);fails=99;return}
+  if(er==="audio-capture"){note("找不到麥克風，請確認沒有其他 App 正在使用");return}
+  if(er==="network"){fails++;return}
+  if(er==="aborted"||er==="no-speech")return; fails++};
+ rec.onend=()=>{recActive=false;state="idle";clearMics();const S=curSide;let text=(fin||interim||"").trim();if(ignoreResult)text="";setLive(S,"");
+  if(fails>=99){fails=0;setActive(null);return}
+  if(text){fails=0;process(S,text);return}
+  if(mode==="auto"&&autoOn){if(!heard&&Math.random()<.3)expSide=other(expSide);scheduleRetry()}else setActive(null)};
+}
+async function process(S,text){let who=S,src=null;
+ if(mode==="auto"){state="busy";who=await whoSpoke(text,S);if(who!==S){src="auto";note("偵測到是另一方在說話，已自動切換")}}
+ await handle(who,text,src);if(mode==="auto"||autoOn)expSide=other(who)}
+async function handle(S,text,srcLang){text=(text||"").trim();if(!text)return;if(recActive)stopListen(true);
+ const O=other(S);const sl=srcLang||$("lang"+S).value,tl=$("lang"+O).value;state="busy";
+ setActive(S);setLive(S,"翻譯中…");const tr=await translate(text,sl,tl);setLive(S,"");hist.push({side:S,orig:text,tr,tl});render();
+ await autoSpeak(tr,tl);await new Promise(r=>setTimeout(r,450));state="idle";
+ if(autoOn)scheduleRetry();else setActive(null)}
+function stopTTS(){if(SS)SS.cancel();auTok++;try{AU.pause()}catch(e){}}
 document.querySelectorAll(".send,.mic,#tts,#auto").forEach(b=>b.addEventListener("touchstart",unlock,{passive:true}));
 document.querySelectorAll(".send").forEach(b=>b.onclick=()=>{unlock();const i=$("in"+b.dataset.s);handle(b.dataset.s,i.value);i.value=""});
 for(const S of ["T","B"])$("in"+S).addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){unlock();handle(S,e.target.value);e.target.value=""}});
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
 if(!SR){note("此瀏覽器不支援語音辨識，請改用打字，或使用新版 Chrome／Safari（需 https）");document.querySelectorAll(".mic").forEach(m=>m.disabled=true);$("auto").disabled=true}
-for(const S of ["T","B"])$("mic"+S).onclick=()=>{unlock();if(autoOn)toggleAuto(false);if(rec){try{rec.stop()}catch(e){}return}
- ensureAudio();rec=new SR();rec.lang=$("lang"+S).value;rec.interimResults=true;rec.continuous=false;let fin="";const btn=$("mic"+S);btn.classList.add("on");SS&&SS.cancel();levelOn(S);
- rec.onresult=e=>{let it="";fin="";for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else it+=r[0].transcript}$("live"+S).textContent=fin+it};
- rec.onerror=e=>{$("live"+S).textContent=e.error==="not-allowed"?"麥克風權限被拒，請在瀏覽器設定允許":"辨識錯誤："+e.error};
- rec.onend=()=>{btn.classList.remove("on");const r=rec;rec=null;try{r.abort()}catch(e){}levelOff();judgeVoice(S);if(fin)setTimeout(()=>handle(S,fin),600);else setActive(null)};
- try{rec.start()}catch(e){rec=null;btn.classList.remove("on");levelOff()}};
+for(const S of ["T","B"])$("mic"+S).onclick=()=>{unlock();if(autoOn)toggleAuto(false);
+ if(recActive){stopListen(false);return}
+ if(state==="busy"){stopTTS()}
+ if(state!=="idle")return; startListen(S,"manual")};
 /* ---------- auto conversation ---------- */
-let autoOn=false,expSide="B",fails=0,restartT=null;
 function scriptOf(t){const c={han:0,kana:0,hang:0,thai:0,lat:0};for(const ch of t){if(/[\u3040-\u30ff]/.test(ch))c.kana++;else if(/[\u4e00-\u9fff]/.test(ch))c.han++;else if(/[\uac00-\ud7af\u1100-\u11ff]/.test(ch))c.hang++;else if(/[\u0e00-\u0e7f]/.test(ch))c.thai++;else if(/[A-Za-z\u00c0-\u024f\u1ea0-\u1ef9]/.test(ch))c.lat++}
  if(c.kana)return"kana";let best="lat",n=-1;for(const k of["han","hang","thai","lat"])if(c[k]>n){n=c[k];best=k}return n>0?best:null}
 function scriptOfLang(l){const p=l.split("-")[0];return p==="zh"?"han":p==="ja"?"kana":p==="ko"?"hang":p==="th"?"thai":"lat"}
 async function whoSpoke(text,recSide){const s=scriptOf(text);const m=["T","B"].filter(X=>{const ls=scriptOfLang($("lang"+X).value);return ls===s||(ls==="kana"&&s==="han")});
  if(m.length===1)return m[0];if(m.length===0)return recSide;
  const d=await detectLang(text);if(d){const hit=m.find(X=>code($("lang"+X).value).split("-")[0]===d.split("-")[0]);if(hit)return hit}return recSide}
-function listen(){clearTimeout(restartT);if(!autoOn||busy||rec)return;const S=expSide;rec=new SR();rec.lang=$("lang"+S).value;rec.interimResults=true;rec.continuous=false;let fin="",heard=false;
- $("mic"+S).classList.add("on");$("live"+S).textContent="聆聽中…";$("live"+other(S)).textContent="";
- rec.onspeechstart=rec.onsoundstart=()=>{if(!heard){heard=true;levelOn(S)}};
- rec.onresult=e=>{heard=true;if(lvlSide!==S)levelOn(S);let it="";fin="";for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else it+=r[0].transcript}$("live"+S).textContent=fin+it;fails=0};
- rec.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){toggleAuto(false);note("麥克風權限被拒，已關閉自動對話")}else if(e.error!=="no-speech"&&e.error!=="aborted")fails++};
- rec.onend=async()=>{const r=rec;rec=null;try{r.abort()}catch(e){}$("mic"+S).classList.remove("on");levelOff();$("live"+S).textContent="";
-  if(!autoOn)return;const text=fin.trim();
-  if(text){busy=true;const who=await whoSpoke(text,S);judgeVoice(who);
-   if(who!==S)note("偵測到是另一方在說話，已自動切換");
-   await new Promise(r=>setTimeout(r,400));await handle(who,text,who===S?null:"auto");expSide=other(who);busy=false}
-  else{pitches=[];if(!heard&&Math.random()<.35)expSide=other(expSide)}
-  if(fails>4){note("語音辨識不穩，稍候重試");fails=0;restartT=setTimeout(listen,2500)}else restartT=setTimeout(listen,250)};
- try{rec.start()}catch(e){rec=null;$("mic"+S).classList.remove("on");restartT=setTimeout(listen,1000)}}
-function toggleAuto(v){autoOn=v;$("auto").classList.toggle("on",v);if(v){ensureAudio();note("自動對話：輪流說話即可，系統自動判斷是哪一方");listen()}else{clearTimeout(restartT);if(rec){try{rec.abort()}catch(e){}rec=null}document.querySelectorAll(".mic").forEach(m=>m.classList.remove("on"));setActive(null)}}
+function toggleAuto(v){autoOn=v;$("auto").classList.toggle("on",v);clearTimeout(retryT);retryT=null;
+ if(v){fails=0;note("自動對話：輪流說話即可，系統自動判斷是哪一方");if(state==="idle")startListen(expSide,"auto")}
+ else{if(recActive)stopListen(true);clearMics();setActive(null)}}
 $("auto").onclick=()=>{unlock();toggleAuto(!autoOn)};
-setInterval(()=>{if(autoOn&&!rec&&!busy&&!restartT)listen()},3000);
+setInterval(()=>{if(autoOn&&state==="idle"&&!recActive&&!retryT)startListen(expSide,"auto")},4000);
 /* ---------- misc ---------- */
 $("swap").onclick=()=>{const a=$("langT").value;$("langT").value=$("langB").value;$("langB").value=a};
-$("tts").onclick=()=>{unlock();tts=!tts;$("tts").classList.toggle("on",tts);$("tts").querySelector("b").textContent=tts?"🔊":"🔇";if(!tts){SS&&SS.cancel();auTok++;AU.pause()}};
+$("tts").onclick=()=>{unlock();tts=!tts;$("tts").classList.toggle("on",tts);$("tts").querySelector("b").textContent=tts?"🔊":"🔇";if(!tts)stopTTS()};
 $("clear").onclick=()=>{if(confirm("清除所有對話？")){hist=[];render()}};
 </script></body></html>
